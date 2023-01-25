@@ -1,0 +1,16 @@
+{
+    "name": "OnmindChromaKeyEditor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:907a20d1e5d09a24f89c81578b8e65dd"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
