@@ -10,6 +10,9 @@
 -Samples 에서 compositor를 가져오거나 참조하여 생성
 -카메라 등 셋팅
 
+[전체 컨트롤]
+Webcam안에 WebcamController 사용
+
 [Layer Setting]
 User Layer 26 : WebCam
 User Layer 28 : AllPostProcessing

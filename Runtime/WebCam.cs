@@ -12,17 +12,15 @@ public class WebCam : MonoBehaviour
     private int currentIndex = 0;
     public string playKeyCode = "a";
     public string stopKeyCode = "s";
-    public Transform webcamCamera = null;
-    public Vector3 webcamCamPos = new Vector3(0, 0, 0);
-    public Vector3 webcamResetPos = new Vector3(0, 0, 0);
     public Transform virtualCamera = null;
     public Vector3 virtualCamPos = new Vector3(0, 0, 0);
-    public Vector3 virtualResetPos = new Vector3(0, 0, 0);
+    public Vector3 basePosition = new Vector3 (0, 0, 0);
+    public Vector3 baseVirtualPos = new Vector3(0, 0, 0);
+    public Vector3 iphonePos = new Vector3(0,0, 0);
     public GameObject matchBox = null;
     public Vector3 matchBoxPos = new Vector3(0, 0, 0);
-    public Vector3 matchResetPos = new Vector3(0, 0, 0);
-    public Vector3 matchBoxScl= new Vector3(1, 1, 1);
-    public Vector3 matchResetScl = new Vector3(1, 1, 1);
+    public Vector3 matchBoxScl = new Vector3(1, 1, 1);
+    public Vector3 baseSumMatchPos = new Vector3(0, 0, 0);
 
     private void Start()
     {

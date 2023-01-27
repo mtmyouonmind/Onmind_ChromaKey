@@ -13,20 +13,14 @@ public class WebCamEditor : Editor
     string inputPlayKey = "a";
     string inputStopKey = "s";
     SerializedProperty display;
-    SerializedProperty webcamCamera;
-    Vector3 webcamEditorPos = new Vector3(0, 0, 0);
-    Vector3 webcamResetPos = new Vector3(0, 0, 0);
-    bool showWebcamReset = false;
     SerializedProperty virtualCamera;
-    Vector3 virtualEditorPos = new Vector3(0, 0, 0);
-    Vector3 virtualResetPos = new Vector3(0, 0, 0);
-    bool showVirtualReset = false;
     SerializedProperty matchBox;
-    Vector3 matchBoxEditorPos = new Vector3(0, 0, 0 );
-    Vector3 matchResetPos = new Vector3(0, 0, 0);
-    Vector3 matchBoxEditorScl = new Vector3 (1 , 1, 1);
-    Vector3 matchResetScl = new Vector3(1, 1, 1);
-    bool showBoxReset = false;
+    Vector3 basePos = new Vector3(0, 0, 0);
+    Vector3 virtualPhonePos = new Vector3(0, 0, 0);
+    Vector3 baseSumVirtualPos = new Vector3(0, 0, 0);
+    Vector3 matchBoxPos = new Vector3(0, 0, 0);
+    Vector3 baseSumMatchPos = new Vector3(0, 0, 0);
+    Vector3 matchBoxScl = new Vector3(0, 0, 0);
     
 
     private void OnEnable()
@@ -39,19 +33,17 @@ public class WebCamEditor : Editor
 
         //프로퍼티
         display = serializedObject.FindProperty("display");
-        webcamCamera = serializedObject.FindProperty("webcamCamera");
         virtualCamera = serializedObject.FindProperty("virtualCamera");
         matchBox = serializedObject.FindProperty("matchBox");
 
-        //저장된포지션불러오기
-        webcamEditorPos = webCam.webcamCamPos;
-        virtualEditorPos = webCam.virtualCamPos;
-        matchBoxEditorPos = webCam.matchBoxPos;
-        matchBoxEditorScl = webCam.matchBoxScl;
-        webcamResetPos = webCam.webcamResetPos;
-        virtualResetPos = webCam.virtualResetPos;
-        matchResetPos = webCam.matchResetPos;
-        matchResetScl = webCam.matchResetScl;
+        //기본 포지션 불러오기
+        basePos = webCam.basePosition;
+        baseSumVirtualPos = webCam.baseVirtualPos;
+        virtualPhonePos = webCam.iphonePos;
+        matchBoxPos = webCam.matchBoxPos;
+        matchBoxScl = webCam.matchBox.transform.localScale;
+        baseSumMatchPos = webCam.baseSumMatchPos;
+
 
         //키불러오기
         inputPlayKey = webCam.playKeyCode;
@@ -137,143 +129,211 @@ public class WebCamEditor : Editor
 
         EditorGUI.indentLevel = 0;
 
-
-
-        //[웹캠영역]
+        //기본위치
 
         EditorGUILayout.Space(30);
-        EditorGUILayout.LabelField("[웹캠]");
-        EditorGUILayout.Space();
-        
-
-        EditorGUI.indentLevel = 2;
-        EditorGUILayout.PropertyField(webcamCamera, new GUIContent("웹캠"));
-        //웹캠 트랜스폼 위치이동 및 저장
-
-        webcamEditorPos = EditorGUILayout.Vector3Field("위치", webcamEditorPos);
-        if (webCam.webcamCamera != null)
-        {
-            webCam.webcamCamera.transform.position = webcamEditorPos;
-            webCam.webcamCamPos = webcamEditorPos;
-        }
-
-        EditorGUILayout.Space();
-        GUILayout.BeginHorizontal();
-        GUILayout.FlexibleSpace();
-        if (GUILayout.Button("Reset", GUILayout.MaxWidth(200), GUILayout.MaxHeight(30)))
-        {
-            webcamEditorPos = webcamResetPos;
-            webCam.webcamCamPos = webcamResetPos;
-        }
-        GUILayout.EndHorizontal();
-
-        GUILayout.BeginHorizontal();
-        GUILayout.FlexibleSpace();
-        showWebcamReset = EditorGUILayout.BeginFoldoutHeaderGroup(showWebcamReset, "리셋영역 수정");
-        GUILayout.EndHorizontal();
-
-        if (showWebcamReset)
-        {
-            webcamResetPos = EditorGUILayout.Vector3Field("리셋위치", webcamResetPos);
-            webCam.webcamResetPos = webcamResetPos;
-        }
-        EditorGUILayout.EndFoldoutHeaderGroup();
-        EditorGUI.indentLevel = 0;
-
-
-        //버츄얼캠영역
-
-        EditorGUILayout.Space(30);
-        EditorGUILayout.LabelField("[3D캠,버츄얼캠]");
+        EditorGUILayout.LabelField("[전체 위치 셋팅]");
         EditorGUILayout.Space();
 
         EditorGUI.indentLevel = 2;
-        EditorGUILayout.PropertyField(virtualCamera, new GUIContent("3D캠,버추얼캠"));
-        //버츄얼캠 트랜스폼 위치이동 및 저장
-        virtualEditorPos = EditorGUILayout.Vector3Field("위치", virtualEditorPos);
-        if (webCam.virtualCamera != null)
-        {
-            webCam.virtualCamera.transform.position = virtualEditorPos;
-            webCam.virtualCamPos = virtualEditorPos;
-        }
+        EditorGUILayout.PropertyField(virtualCamera, new GUIContent("3D카메라"));
 
-        EditorGUILayout.Space();
-        GUILayout.BeginHorizontal();
-        GUILayout.FlexibleSpace();
-        if (GUILayout.Button("Reset", GUILayout.MaxWidth(200), GUILayout.MaxHeight(30)))
-        {
-            virtualEditorPos = virtualResetPos;
-            webCam.virtualCamPos = virtualResetPos;
-        }
-        GUILayout.EndHorizontal();
+        basePos = EditorGUILayout.Vector3Field("기준 위치", basePos);
+        webCam.basePosition = basePos;
 
         GUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
-        showVirtualReset = EditorGUILayout.BeginFoldoutHeaderGroup(showVirtualReset, "리셋영역 수정");
-        GUILayout.EndHorizontal();
-
-        if (showVirtualReset)
+        if (GUILayout.Button("Cam Position Load", GUILayout.MaxWidth(300), GUILayout.MaxHeight(30)))
         {
-            virtualResetPos = EditorGUILayout.Vector3Field("리셋위치", virtualResetPos);
-            webCam.virtualResetPos = virtualResetPos;
+            basePos = webCam.virtualCamera.position;   
         }
-        EditorGUILayout.EndFoldoutHeaderGroup();
-        EditorGUI.indentLevel = 0;
-
-
-
-        //박스영역
-
-        EditorGUILayout.Space(30);
-        EditorGUILayout.LabelField("[매치박스]");
-        EditorGUILayout.Space();
+        GUILayout.FlexibleSpace();
+        GUILayout.EndHorizontal();
 
         EditorGUI.indentLevel = 2;
+
+        EditorGUILayout.Space(30);
+
+        virtualPhonePos = EditorGUILayout.Vector3Field("버추얼카메라의 위치", virtualPhonePos);
+        webCam.iphonePos = virtualPhonePos;
+
+        baseSumVirtualPos = basePos + virtualPhonePos;
+        baseSumVirtualPos = EditorGUILayout.Vector3Field("위치 보정 계산",baseSumVirtualPos);
+
+        GUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+        if (GUILayout.Button("Cam Position Save", GUILayout.MaxWidth(300), GUILayout.MaxHeight(30)))
+        {
+            webCam.virtualCamera.position = baseSumVirtualPos;
+        }
+        GUILayout.FlexibleSpace();
+        GUILayout.EndHorizontal();
+
+        EditorGUILayout.Space(30);
         EditorGUILayout.PropertyField(matchBox, new GUIContent("매치박스"));
 
-        //매치박스트랜스폼 위치,크기저장
-        matchBoxEditorPos = EditorGUILayout.Vector3Field("위치",matchBoxEditorPos);
-        matchBoxEditorScl = EditorGUILayout.Vector3Field("크기", matchBoxEditorScl);
+        matchBoxPos = EditorGUILayout.Vector3Field("매치박스위치", matchBoxPos);
+        webCam.matchBoxPos = matchBoxPos;
 
-        if (webCam.matchBox != null)
-        {
-            webCam.matchBox.transform.localPosition = matchBoxEditorPos;
-            webCam.matchBoxPos = matchBoxEditorPos;
-            webCam.matchBox.transform.localScale = matchBoxEditorScl;
-            webCam.matchBoxScl = matchBoxEditorScl;
-        }
-
-        EditorGUILayout.Space();
-        GUILayout.BeginHorizontal();
-        GUILayout.FlexibleSpace();
-        if (GUILayout.Button("Reset", GUILayout.MaxWidth(200), GUILayout.MaxHeight(30)))
-        {
-            matchBoxEditorPos = matchResetPos;
-            webCam.matchBoxPos = matchResetPos;
-            matchBoxEditorScl = matchResetScl;
-            webCam.matchBoxScl = matchResetScl;
-        }
-        GUILayout.EndHorizontal();
+        baseSumMatchPos = basePos + matchBoxPos;
+        baseSumMatchPos = EditorGUILayout.Vector3Field("위치 보정 계산", baseSumMatchPos);
 
         GUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
-        showBoxReset = EditorGUILayout.BeginFoldoutHeaderGroup(showBoxReset, "리셋영역 수정");
-        GUILayout.EndHorizontal();
-        if (showBoxReset)
+        if (GUILayout.Button("Matchbox Position Save", GUILayout.MaxWidth(300), GUILayout.MaxHeight(30)))
         {
-            matchResetPos = EditorGUILayout.Vector3Field("리셋위치", matchResetPos);
-            webCam.matchResetPos = matchResetPos;
-            matchResetScl = EditorGUILayout.Vector3Field("리셋크기", matchResetScl);
-            webCam.matchResetScl = matchResetScl;
+            webCam.matchBox.transform.position = baseSumMatchPos;
         }
-        EditorGUILayout.EndFoldoutHeaderGroup();
-        EditorGUI.indentLevel = 0;
+        GUILayout.FlexibleSpace();
+        GUILayout.EndHorizontal();
 
-        serializedObject.ApplyModifiedProperties();
+        EditorGUILayout.Space(10);
+
+        matchBoxScl = EditorGUILayout.Vector3Field("매치박스크기", matchBoxScl);
+        webCam.matchBox.transform.localScale = matchBoxScl;
+
+        EditorGUILayout.Space(30);
+
+        #region 이전작성
+
+        ////[웹캠영역]
+
+        //EditorGUILayout.Space(30);
+        //EditorGUILayout.LabelField("[웹캠]");
+        //EditorGUILayout.Space();
+
+
+        //EditorGUI.indentLevel = 2;
+        //EditorGUILayout.PropertyField(webcamCamera, new GUIContent("웹캠"));
+
+        ////웹캠 트랜스폼 위치이동 및 저장
+
+        //webcamEditorPos = EditorGUILayout.Vector3Field("위치", webcamEditorPos);
+        //if (webCam.webcamCamera != null)
+        //{
+        //    webCam.webcamCamera.transform.position = webcamEditorPos;
+        //    webCam.webcamCamPos = webcamEditorPos;
+        //}
+
+        //EditorGUILayout.Space();
+        //GUILayout.BeginHorizontal();
+        //GUILayout.FlexibleSpace();
+        //if (GUILayout.Button("Reset", GUILayout.MaxWidth(200), GUILayout.MaxHeight(30)))
+        //{
+        //    webcamEditorPos = webcamResetPos;
+        //    webCam.webcamCamPos = webcamResetPos;
+        //}
+        //GUILayout.EndHorizontal();
+
+        //GUILayout.BeginHorizontal();
+        //GUILayout.FlexibleSpace();
+        //showWebcamReset = EditorGUILayout.BeginFoldoutHeaderGroup(showWebcamReset, "리셋영역 수정");
+        //GUILayout.EndHorizontal();
+
+        //if (showWebcamReset)
+        //{
+        //    webcamResetPos = EditorGUILayout.Vector3Field("리셋위치", webcamResetPos);
+        //    webCam.webcamResetPos = webcamResetPos;
+        //}
+        //EditorGUILayout.EndFoldoutHeaderGroup();
+        //EditorGUI.indentLevel = 0;
+
+
+        ////버츄얼캠영역
+
+        //EditorGUILayout.Space(30);
+        //EditorGUILayout.LabelField("[3D캠,버츄얼캠]");
+        //EditorGUILayout.Space();
+
+        //EditorGUI.indentLevel = 2;
+        //EditorGUILayout.PropertyField(virtualCamera, new GUIContent("3D캠,버추얼캠"));
+        ////버츄얼캠 트랜스폼 위치이동 및 저장
+        //virtualEditorPos = EditorGUILayout.Vector3Field("위치", virtualEditorPos);
+        //if (webCam.virtualCamera != null)
+        //{
+        //    webCam.virtualCamera.transform.position = virtualEditorPos;
+        //    webCam.virtualCamPos = virtualEditorPos;
+        //}
+
+        //EditorGUILayout.Space();
+        //GUILayout.BeginHorizontal();
+        //GUILayout.FlexibleSpace();
+        //if (GUILayout.Button("Reset", GUILayout.MaxWidth(200), GUILayout.MaxHeight(30)))
+        //{
+        //    virtualEditorPos = virtualResetPos;
+        //    webCam.virtualCamPos = virtualResetPos;
+        //}
+        //GUILayout.EndHorizontal();
+
+        //GUILayout.BeginHorizontal();
+        //GUILayout.FlexibleSpace();
+        //showVirtualReset = EditorGUILayout.BeginFoldoutHeaderGroup(showVirtualReset, "리셋영역 수정");
+        //GUILayout.EndHorizontal();
+
+        //if (showVirtualReset)
+        //{
+        //    virtualResetPos = EditorGUILayout.Vector3Field("리셋위치", virtualResetPos);
+        //    webCam.virtualResetPos = virtualResetPos;
+        //}
+        //EditorGUILayout.EndFoldoutHeaderGroup();
+        //EditorGUI.indentLevel = 0;
+
+        ////박스영역
+
+        //EditorGUILayout.Space(30);
+        //EditorGUILayout.LabelField("[매치박스]");
+        //EditorGUILayout.Space();
+
+        //EditorGUI.indentLevel = 2;
+        //EditorGUILayout.PropertyField(matchBox, new GUIContent("매치박스"));
+
+        ////매치박스트랜스폼 위치,크기저장
+        //matchBoxEditorPos = EditorGUILayout.Vector3Field("위치", matchBoxEditorPos);
+        //matchBoxEditorScl = EditorGUILayout.Vector3Field("크기", matchBoxEditorScl);
+
+        //if (webCam.matchBox != null)
+        //{
+        //    webCam.matchBox.transform.localPosition = matchBoxEditorPos;
+        //    webCam.matchBoxPos = matchBoxEditorPos;
+        //    webCam.matchBox.transform.localScale = matchBoxEditorScl;
+        //    webCam.matchBoxScl = matchBoxEditorScl;
+        //}
+
+        //EditorGUILayout.Space();
+        //GUILayout.BeginHorizontal();
+        //GUILayout.FlexibleSpace();
+        //if (GUILayout.Button("Reset", GUILayout.MaxWidth(200), GUILayout.MaxHeight(30)))
+        //{
+        //    matchBoxEditorPos = matchResetPos;
+        //    webCam.matchBoxPos = matchResetPos;
+        //    matchBoxEditorScl = matchResetScl;
+        //    webCam.matchBoxScl = matchResetScl;
+        //}
+        //GUILayout.EndHorizontal();
+
+        //GUILayout.BeginHorizontal();
+        //GUILayout.FlexibleSpace();
+        //showBoxReset = EditorGUILayout.BeginFoldoutHeaderGroup(showBoxReset, "리셋영역 수정");
+        //GUILayout.EndHorizontal();
+        //if (showBoxReset)
+        //{
+        //    matchResetPos = EditorGUILayout.Vector3Field("리셋위치", matchResetPos);
+        //    webCam.matchResetPos = matchResetPos;
+        //    matchResetScl = EditorGUILayout.Vector3Field("리셋크기", matchResetScl);
+        //    webCam.matchResetScl = matchResetScl;
+        //}
+        //EditorGUILayout.EndFoldoutHeaderGroup();
+        //EditorGUI.indentLevel = 0;
+
+        //serializedObject.ApplyModifiedProperties();
+        #endregion
+
+
+
 
 
 
 
     }
-    
+
 }
