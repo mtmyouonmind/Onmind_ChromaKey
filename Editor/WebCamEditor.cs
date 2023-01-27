@@ -154,8 +154,12 @@ public class WebCamEditor : Editor
 
         EditorGUILayout.Space(30);
 
+
         virtualPhonePos = EditorGUILayout.Vector3Field("버추얼카메라의 위치", virtualPhonePos);
-        webCam.iphonePos = virtualPhonePos;
+        if (virtualCamera != null)
+        {
+            webCam.iphonePos = virtualPhonePos;
+        }
 
         baseSumVirtualPos = basePos + virtualPhonePos;
         baseSumVirtualPos = EditorGUILayout.Vector3Field("위치 보정 계산",baseSumVirtualPos);
@@ -173,7 +177,10 @@ public class WebCamEditor : Editor
         EditorGUILayout.PropertyField(matchBox, new GUIContent("매치박스"));
 
         matchBoxPos = EditorGUILayout.Vector3Field("매치박스위치", matchBoxPos);
-        webCam.matchBoxPos = matchBoxPos;
+        if (matchBox != null)
+        {
+            webCam.matchBoxPos = matchBoxPos;
+        }
 
         baseSumMatchPos = basePos + matchBoxPos;
         baseSumMatchPos = EditorGUILayout.Vector3Field("위치 보정 계산", baseSumMatchPos);
@@ -193,7 +200,7 @@ public class WebCamEditor : Editor
         webCam.matchBox.transform.localScale = matchBoxScl;
 
         EditorGUILayout.Space(30);
-
+        serializedObject.ApplyModifiedProperties();
         #region 이전작성
 
         ////[웹캠영역]
